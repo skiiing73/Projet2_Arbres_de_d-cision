@@ -122,39 +122,40 @@ public class DonneesFichier {
     }
 
     public void set_gain_attributs() {
-
+        // Parcours de tous les attributs sauf le dernier (qui est la classe cible)
         for (int nb_attributs = 0; nb_attributs < attributs_name.size() - 1; nb_attributs++) {
             float somme_entropies = 0;
+
+            // Parcours des valeurs possibles de l'attribut actuel
             for (String possible_values_temp : possible_values.get(nb_attributs)) {
-                System.out.println(possible_values_temp);
                 ArrayList<ArrayList<String>> sous_ensemble = new ArrayList<ArrayList<String>>();
 
+                // Création des sous-ensembles associés à une valeur possible de l'attribut
                 for (ArrayList<String> donnees : data) {
-
-                    // creation des sous ensembles associés a un attribut
                     if (donnees.contains(possible_values_temp)) {
                         sous_ensemble.add(donnees);
                     }
                 }
-                System.out.println(sous_ensemble);
-                float entropie_sous_ensemble = calcul_entropie_sous_ensemble(sous_ensemble)[0];
-                float nb_no = calcul_entropie_sous_ensemble(sous_ensemble)[1];
-                float nb_yes = calcul_entropie_sous_ensemble(sous_ensemble)[2];
-                System.out.println(entropie_sous_ensemble);
-                System.out.println(nb_no);
-                System.out.println(nb_yes);
+
+                // Calcul de l'entropie du sous-ensemble et du nombre d'occurrences de "yes" et
+                // "no"
+                float[] resultats_entropie = calcul_entropie_sous_ensemble(sous_ensemble);
+                float entropie_sous_ensemble = resultats_entropie[0];
+                float nb_no = resultats_entropie[1];
+                float nb_yes = resultats_entropie[2];
+
+                // Calcul de la somme des entropies pondérées
                 if (nb_no == 0.0 || nb_yes == 0) {
                     somme_entropies += 0;
                 } else {
                     somme_entropies += ((nb_no + nb_yes) / (data.size())) * entropie_sous_ensemble;
                 }
-                System.out.println(somme_entropies);
 
             }
+            // Calcul du gain pour cet attribut
             float gain = entropie_globale - somme_entropies;
             gain_attributs.add(gain);
-            gain = 0;
-
         }
     }
+
 }
