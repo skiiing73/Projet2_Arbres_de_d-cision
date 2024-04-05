@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-@SuppressWarnings("unused")
-
 public class DonneesFichier {
 
     // Attributs de classe pour stocker les noms d'attributs, les valeurs possibles
@@ -14,7 +12,10 @@ public class DonneesFichier {
     private ArrayList<String> attributs_name = new ArrayList<String>();
     private ArrayList<ArrayList<String>> possible_values = new ArrayList<ArrayList<String>>();
     private ArrayList<ArrayList<String>> data = new ArrayList<ArrayList<String>>();
+    private ArrayList<Float> gain_attributs = new ArrayList<Float>();
     private String filePath;
+
+    private float entropie_globale;
 
     // Constructeur par défaut
     public DonneesFichier(String filePath) {
@@ -36,9 +37,12 @@ public class DonneesFichier {
         return data;
     }
 
+    public ArrayList<Float> getgain_attributs() {
+        return gain_attributs;
+    }
+
     // Méthode pour lire les données à partir d'un fichier
     public void lire_donnees() {
-
         try {
             // Scanner pour lire le fichier
             Scanner scanner = new Scanner(new File(filePath));
@@ -88,5 +92,69 @@ public class DonneesFichier {
         }
         // Afficher un message lorsque les données sont lues avec succès
         System.out.println("Données lues avec succès");
+    }
+
+    public void set_entropie() {
+        // permet de calculer l'entropie globale du système
+        entropie_globale = calcul_entropie_sous_ensemble(data)[0];
+    }
+
+    public float[] calcul_entropie_sous_ensemble(ArrayList<ArrayList<String>> sous_ensemble) {
+        // permet de calculer l'entropie d'un sous ensemble
+        float nb_yes = 0;
+        float nb_no = 0;
+        for (ArrayList<String> donnees : sous_ensemble) { // parcours du sous_ensemble pour determiner le nb de yes et
+                                                          // de no
+            if (donnees.get(4).equals("yes")) {
+                nb_yes++;
+            } else {
+                nb_no++;
+            }
+        }
+        float nb_donnes = nb_no + nb_yes; // nombre de choix totaux
+        float p_nb_yes = nb_yes / nb_donnes; // probabilité d'avoir yes
+        float p_nb_no = nb_no / nb_donnes;// probabilité d'avoir no
+        float entropie_sous_ensemble = (float) -(p_nb_yes * (Math.log(p_nb_yes) / Math.log(2))
+                + p_nb_no * (Math.log(p_nb_no) / Math.log(2)));
+        float[] resultats = { entropie_sous_ensemble, nb_no, nb_yes };
+
+        return resultats;
+    }
+
+    public void set_gain_attributs() {
+
+        for (int nb_attributs = 0; nb_attributs < attributs_name.size() - 1; nb_attributs++) {
+            float somme_entropies = 0;
+            for (String possible_values_temp : possible_values.get(nb_attributs)) {
+                System.out.println(possible_values_temp);
+                ArrayList<ArrayList<String>> sous_ensemble = new ArrayList<ArrayList<String>>();
+
+                for (ArrayList<String> donnees : data) {
+
+                    // creation des sous ensembles associés a un attribut
+                    if (donnees.contains(possible_values_temp)) {
+                        sous_ensemble.add(donnees);
+                    }
+                }
+                System.out.println(sous_ensemble);
+                float entropie_sous_ensemble = calcul_entropie_sous_ensemble(sous_ensemble)[0];
+                float nb_no = calcul_entropie_sous_ensemble(sous_ensemble)[1];
+                float nb_yes = calcul_entropie_sous_ensemble(sous_ensemble)[2];
+                System.out.println(entropie_sous_ensemble);
+                System.out.println(nb_no);
+                System.out.println(nb_yes);
+                if (nb_no == 0.0 || nb_yes == 0) {
+                    somme_entropies += 0;
+                } else {
+                    somme_entropies += ((nb_no + nb_yes) / (data.size())) * entropie_sous_ensemble;
+                }
+                System.out.println(somme_entropies);
+
+            }
+            float gain = entropie_globale - somme_entropies;
+            gain_attributs.add(gain);
+            gain = 0;
+
+        }
     }
 }
