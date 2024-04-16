@@ -26,6 +26,7 @@ public class Arbre {
         racine = noeud_racine;
         for (String valeur : possible_values.get(indiceAttributRacine)) {
             Branche branche = new Branche(noeud_racine, valeur);
+            noeud_racine.addBranche(branche);
             ArrayList<ArrayList<String>> sousEnsemble = new ArrayList<>();
             for (ArrayList<String> exemple : data) {
                 if (exemple.get(indiceAttributRacine).equals(valeur)) {
@@ -41,7 +42,8 @@ public class Arbre {
     private void creerSousArbre(Branche branche, ArrayList<ArrayList<String>> sousEnsemble,
             ArrayList<String> attributs_name, ArrayList<ArrayList<String>> possible_values,
             ArrayList<ArrayList<String>> AnciensousEnsemble) {
-        // Condition d'arrêt 1 : l'ensemble d'exemples associés au nœud courant est vide
+        // Condition d'arrêt 1 : l'ensemble d'exemples associés au noeud courant est
+        // vide
         if (sousEnsemble.isEmpty()) {
             // Créer une feuille avec la classe majoritaire dans le sous-ensemble parent
             String classeMajoritaire = classeMajoritaire(AnciensousEnsemble);
@@ -50,7 +52,7 @@ public class Arbre {
             return;
         }
 
-        // Condition d'arrêt 2 : tous les exemples associés au nœud courant ont la même
+        // Condition d'arrêt 2 : tous les exemples associés au noeud courant ont la même
         // valeur de classe
         if (estPur(sousEnsemble)) {
             // Créer une feuille avec la classe unique dans le sous-ensemble
@@ -67,7 +69,7 @@ public class Arbre {
         // Trouver l'attribut avec le gain d'information le plus élevé
         int indiceAttribut = gain_attributs.indexOf(Collections.max(gain_attributs));
 
-        // Créer le nœud correspondant à cet attribut et le connecter à la branche
+        // Créer le noeud correspondant à cet attribut et le connecter à la branche
         // actuelle
         String attribut = attributs_name.get(indiceAttribut);
         Noeud noeud = new Noeud(attribut);
@@ -77,6 +79,7 @@ public class Arbre {
         // et récursivement construire l'arbre
         for (String valeur : possible_values.get(indiceAttribut)) {
             Branche nouvelleBranche = new Branche(noeud, valeur);
+            noeud.addBranche(nouvelleBranche);
             ArrayList<ArrayList<String>> nouveauSousEnsemble = new ArrayList<>();
             for (ArrayList<String> exemple : sousEnsemble) {
                 if (exemple.get(indiceAttribut).equals(valeur)) {
@@ -88,7 +91,9 @@ public class Arbre {
         }
     }
 
+    // permet de verifier si le sous ensemble a que des yes ou que des no
     public boolean estPur(ArrayList<ArrayList<String>> sousEnsemble) {
+
         String classe = sousEnsemble.get(0).get(sousEnsemble.get(0).size() - 1);
         for (ArrayList<String> exemple : sousEnsemble) {
             if (!exemple.get(exemple.size() - 1).equals(classe)) {
@@ -98,6 +103,7 @@ public class Arbre {
         return true;
     }
 
+    // permet de determiner si il ya plus de yes ou de no dans une sous ensemble
     public String classeMajoritaire(ArrayList<ArrayList<String>> sousEnsemble) {
         int nbYes = 0;
         int nbNo = 0;
@@ -111,15 +117,16 @@ public class Arbre {
         return nbYes > nbNo ? "yes" : "no";
     }
 
+    // permet d'afficher un arbre
+    // methode faites par chatgpt pour pouvoir visualiser mes resultats
     public void afficherArbre(Noeud racine, String prefixe) {
         if (racine == null) {
             return;
         }
-
-        // Afficher le nœud actuel
+        // Afficher le noeud actuel
         System.out.println(prefixe + racine.getValue());
 
-        // Récupérer les branches sortantes du nœud
+        // Récupérer les branches sortantes du noeud
         ArrayList<Branche> branches = racine.getBranches();
 
         // Afficher chaque branche avec son noeud et récursivement afficher ses
