@@ -12,7 +12,6 @@ public class DonneesFichier {
     private ArrayList<String> attributs_name = new ArrayList<String>();
     private ArrayList<ArrayList<String>> possible_values = new ArrayList<ArrayList<String>>();
     private ArrayList<ArrayList<String>> data = new ArrayList<ArrayList<String>>();
-    private ArrayList<Float> gain_attributs = new ArrayList<Float>();
     private String filePath;
 
     private float entropie_globale;
@@ -35,10 +34,6 @@ public class DonneesFichier {
     // Méthode pour récupérer les données
     public ArrayList<ArrayList<String>> getData() {
         return data;
-    }
-
-    public ArrayList<Float> getgain_attributs() {
-        return gain_attributs;
     }
 
     // Méthode pour lire les données à partir d'un fichier
@@ -121,13 +116,15 @@ public class DonneesFichier {
         return resultats;
     }
 
-    public void set_gain_attributs() {
+    public ArrayList<Float> set_gain_attributs(ArrayList<ArrayList<String>> valeurspossibles,
+            ArrayList<String> nomdesattributs, ArrayList<ArrayList<String>> data) {
+        ArrayList<Float> gain_attributs = new ArrayList<Float>();
         // Parcours de tous les attributs sauf le dernier (qui est la classe cible)
-        for (int nb_attributs = 0; nb_attributs < attributs_name.size() - 1; nb_attributs++) {
+        for (int nb_attributs = 0; nb_attributs < nomdesattributs.size() - 1; nb_attributs++) {
             float somme_entropies = 0;
 
             // Parcours des valeurs possibles de l'attribut actuel
-            for (String possible_values_temp : possible_values.get(nb_attributs)) {
+            for (String possible_values_temp : valeurspossibles.get(nb_attributs)) {
                 ArrayList<ArrayList<String>> sous_ensemble = new ArrayList<ArrayList<String>>();
 
                 // Création des sous-ensembles associés à une valeur possible de l'attribut
@@ -156,6 +153,7 @@ public class DonneesFichier {
             float gain = entropie_globale - somme_entropies;
             gain_attributs.add(gain);
         }
+        return gain_attributs;
     }
 
 }
