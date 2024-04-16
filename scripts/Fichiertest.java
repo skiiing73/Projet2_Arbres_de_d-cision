@@ -19,6 +19,9 @@ class Fichiertest {
         Arbre arbre = new Arbre(fichier_golf);
         arbre.creer_arbre();
         arbre.afficherArbre(arbre.getRacine(), " ");
-
+        matrice_confusion matrice = new matrice_confusion(fichier_golf, arbre);
+        matrice.calcul_coeff();
+        System.out.println("\nMatrice de confusion: \n" + matrice);
     }
+
 }
