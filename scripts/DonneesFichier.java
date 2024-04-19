@@ -12,6 +12,9 @@ public class DonneesFichier {
     private ArrayList<String> attributs_name = new ArrayList<String>();
     private ArrayList<ArrayList<String>> possible_values = new ArrayList<ArrayList<String>>();
     private ArrayList<ArrayList<String>> data = new ArrayList<ArrayList<String>>();
+    private ArrayList<ArrayList<String>> data_app = new ArrayList<ArrayList<String>>();
+    private ArrayList<ArrayList<String>> data_pred = new ArrayList<ArrayList<String>>();
+
     private String filePath;
 
     private float entropie_globale;
@@ -36,6 +39,30 @@ public class DonneesFichier {
         return data;
     }
 
+    // permet de retourner les données d'apprentissage
+    public ArrayList<ArrayList<String>> getDataapp() {
+        return data_app;
+    }
+
+    // permet de retourner les données d'apprentissage
+    public ArrayList<ArrayList<String>> getDatapred() {
+        return data_pred;
+    }
+
+    // permet de définir qu'elles seront les données d'apprentissages
+    public void setdataapp(int nb_exemples) {
+        for (int i = 0; i < nb_exemples; i++) {
+            data_app.add(data.get(i));
+        }
+    }
+
+    // permet de définir qu'elles seront les données d'apprentissages
+    public void setdatapred(int nb_exemples) {
+        for (int i = nb_exemples; i < data.size(); i++) {
+            data_pred.add(data.get(i));
+        }
+    }
+
     // Méthode pour lire les données à partir d'un fichier
     public void lire_donnees() {
         try {
@@ -45,7 +72,7 @@ public class DonneesFichier {
             int lineNumber = 0;
             while (scanner.hasNextLine()) {
                 lineNumber++;
-                String line = scanner.nextLine();
+                String line = scanner.nextLine().replaceAll(",", " ");
                 // Scanner pour lire chaque ligne
                 Scanner lineScanner = new Scanner(line);
                 if (lineNumber == 1) {
@@ -66,7 +93,8 @@ public class DonneesFichier {
                     int nb_attribut = 0;
                     // Lire chaque mot de la ligne et supprimer les virgules
                     while (lineScanner.hasNext()) {
-                        String mot = lineScanner.next().replaceAll(",", "");
+
+                        String mot = (lineScanner.next());
                         // Ajouter le mot à la liste des données temporaires
                         data_temp.add(mot);
                         // Vérifier si cette valeur n'est pas déjà dans la liste des valeurs possibles
@@ -91,7 +119,7 @@ public class DonneesFichier {
 
     public void set_entropie() {
         // permet de calculer l'entropie globale du système
-        entropie_globale = calcul_entropie_sous_ensemble(data)[0];
+        entropie_globale = calcul_entropie_sous_ensemble(data_app)[0];
     }
 
     public float[] calcul_entropie_sous_ensemble(ArrayList<ArrayList<String>> sous_ensemble) {
@@ -117,7 +145,7 @@ public class DonneesFichier {
     }
 
     public ArrayList<Float> set_gain_attributs(ArrayList<ArrayList<String>> valeurspossibles,
-            ArrayList<String> nomdesattributs, ArrayList<ArrayList<String>> data) {
+            ArrayList<String> nomdesattributs, ArrayList<ArrayList<String>> data_app) {
         ArrayList<Float> gain_attributs = new ArrayList<Float>();
         // Parcours de tous les attributs sauf le dernier (qui est la classe cible)
         for (int nb_attributs = 0; nb_attributs < nomdesattributs.size() - 1; nb_attributs++) {
@@ -128,7 +156,7 @@ public class DonneesFichier {
                 ArrayList<ArrayList<String>> sous_ensemble = new ArrayList<ArrayList<String>>();
 
                 // Création des sous-ensembles associés à une valeur possible de l'attribut
-                for (ArrayList<String> donnees : data) {
+                for (ArrayList<String> donnees : data_app) {
                     if (donnees.contains(possible_values_temp)) {
                         sous_ensemble.add(donnees);
                     }
@@ -145,7 +173,7 @@ public class DonneesFichier {
                 if (nb_no == 0.0 || nb_yes == 0) {
                     somme_entropies += 0;
                 } else {
-                    somme_entropies += ((nb_no + nb_yes) / (data.size())) * entropie_sous_ensemble;
+                    somme_entropies += ((nb_no + nb_yes) / (data_app.size())) * entropie_sous_ensemble;
                 }
 
             }

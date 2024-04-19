@@ -5,22 +5,20 @@ import java.util.ArrayList;
 public class matrice_confusion {
     DonneesFichier donneesFichier;
     Arbre arbre;
-    private ArrayList<Integer> coeff_matrice = new ArrayList<Integer>();
+    int truepositive = 0, truenegative = 0, falsepositive = 0, falsenegative = 0;
 
     public matrice_confusion(DonneesFichier donneesFichier, Arbre arbre) {
         this.donneesFichier = donneesFichier;
         this.arbre = arbre;
     }
 
-    public void calcul_coeff() {
-        ArrayList<ArrayList<String>> data = donneesFichier.getData();
-        ArrayList<ArrayList<String>> possible_values = donneesFichier.getPossible_values();
+    // permet de calculer les coefficients de la matrice d'apprentissage
+    public void calcul_coeff_apprentissage() {
+        ArrayList<ArrayList<String>> data_app = donneesFichier.getDataapp();// recupere les données d'apprentissage
         ArrayList<String> attributs_name = donneesFichier.getAttributs_name();
-        int truepositive = 0, truenegative = 0, falsepositive = 0, falsenegative = 0;
-        int nb_attribut = data.get(0).size() - 1;
-
+        int nb_attribut = data_app.get(0).size() - 1;
         // on parcours toutes les données
-        for (ArrayList<String> donnees : data) {
+        for (ArrayList<String> donnees : data_app) {
             Noeud noeud = arbre.getRacine();
 
             // parcours de l'arbre pour la donnée en cours qui s'arrete quand la feuille est
@@ -58,14 +56,37 @@ public class matrice_confusion {
             }
 
         }
-        coeff_matrice.add(truepositive);
-        coeff_matrice.add(truenegative);
-        coeff_matrice.add(falsepositive);
-        coeff_matrice.add(falsenegative);
+
+    }
+
+    // permet de calculer les coefficients de la matrice de prédiction
+    public void calcul_coeff_prediction() {
+        ArrayList<ArrayList<String>> data_pred = donneesFichier.getDatapred();// recupere les données de prédictions
+
+        for (ArrayList<String> exemple : data_pred) {
+            String classe_exemple = exemple.get(exemple.size() - 1);
+
+            String classe_predite = arbre.predire(arbre.getRacine(), exemple);
+
+            if (classe_exemple.equals("no") && classe_predite.equals("yes")) {
+                falsepositive++;
+            }
+            if (classe_exemple.equals("yes") && classe_predite.equals("yes")) {
+                truepositive++;
+            }
+            if (classe_exemple.equals("no") && classe_predite.equals("no")) {
+                truenegative++;
+            }
+            if (classe_exemple.equals("yes") && classe_predite.equals("no")) {
+                falsenegative++;
+            }
+        }
+
     }
 
     public String toString() {
-        return coeff_matrice.get(0) + "   " + coeff_matrice.get(1) + "\n" + coeff_matrice.get(2) + "   "
-                + coeff_matrice.get(3) + "\n";
+        return "    yes " + " no\n" + "yes  " + truepositive + "   " + truenegative + "\n " + "no  " + falsepositive
+                + "   "
+                + falsenegative + "\n";
     }
 }

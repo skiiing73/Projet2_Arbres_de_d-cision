@@ -15,11 +15,13 @@ public class Arbre {
         return racine;
     }
 
+    // permet de creer un arbre a partir des données d'apprentissage
     public void creer_arbre() {
-        ArrayList<ArrayList<String>> data = donneesFichier.getData();
+        ArrayList<ArrayList<String>> data_app = donneesFichier.getDataapp();
         ArrayList<ArrayList<String>> possible_values = donneesFichier.getPossible_values();
         ArrayList<String> attributs_name = donneesFichier.getAttributs_name();
-        ArrayList<Float> gain_racine = donneesFichier.set_gain_attributs(possible_values, attributs_name, data);
+
+        ArrayList<Float> gain_racine = donneesFichier.set_gain_attributs(possible_values, attributs_name, data_app);
 
         int indiceAttributRacine = gain_racine.indexOf(Collections.max(gain_racine));
         Noeud noeud_racine = new Noeud(attributs_name.get(indiceAttributRacine));
@@ -28,17 +30,18 @@ public class Arbre {
             Branche branche = new Branche(noeud_racine, valeur);
             noeud_racine.addBranche(branche);
             ArrayList<ArrayList<String>> sousEnsemble = new ArrayList<>();
-            for (ArrayList<String> exemple : data) {
+            for (ArrayList<String> exemple : data_app) {
                 if (exemple.get(indiceAttributRacine).equals(valeur)) {
                     sousEnsemble.add(exemple);
                 }
             }
             // Récursivement créer l'arbre pour chaque sous-ensemble
-            creerSousArbre(branche, sousEnsemble, attributs_name, possible_values, data);
+            creerSousArbre(branche, sousEnsemble, attributs_name, possible_values, data_app);
 
         }
     }
 
+    // fonction recursive de la creation d'arbre
     private void creerSousArbre(Branche branche, ArrayList<ArrayList<String>> sousEnsemble,
             ArrayList<String> attributs_name, ArrayList<ArrayList<String>> possible_values,
             ArrayList<ArrayList<String>> AnciensousEnsemble) {
@@ -139,4 +142,29 @@ public class Arbre {
             afficherArbre(noeudArrive, nouveauPrefixe);
         }
     }
+
+    // permet de prédire la classe d'un exemple de données en parcourant l'arbre
+    public String predire(Noeud racine, ArrayList<String> exemple) {
+
+        ArrayList<String> attributs_name = donneesFichier.getAttributs_name();
+        if (racine == null) {
+            // Si le noeud est nul, retournez une valeur par défaut
+            return "aucun_prediction";
+        }
+        if (racine.getValue().equals("yes") || racine.getValue().equals("no")) {
+            // Si le nœud est une feuille, retournez sa valeur
+            return racine.getValue();
+        }
+        // Sinon, récursivement parcourez les branches de l'arbre
+        String attribut = racine.getValue();
+        String valeur = exemple.get(attributs_name.indexOf(attribut));
+        for (Branche branche : racine.getBranches()) {
+            if (branche.getValeur_branche().equals(valeur)) {
+                return predire(branche.getNoeud_arrive(), exemple);
+            }
+        }
+        // Si aucune branche ne correspond à la valeur de l'exemple,
+        return "aucune_prediction";
+    }
+
 }
