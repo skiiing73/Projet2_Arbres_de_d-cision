@@ -4,8 +4,11 @@ import java.util.ArrayList;
 
 class Fichiertest {
     public static void main(String[] args) {
-        // affichage des données du fichier golf
-        DonneesFichier fichier_golf = new DonneesFichier("data/golf_bis.csv");
+        String nom_fichier = "data/golf.csv";
+        int nb_exemples_apprentissages = 7;
+
+        // affichage des données du fichier
+        DonneesFichier fichier_golf = new DonneesFichier(nom_fichier);
         fichier_golf.lire_donnees();
         System.out.println(fichier_golf.getAttributs_name());
         System.out.println(fichier_golf.getPossible_values());
@@ -13,11 +16,11 @@ class Fichiertest {
 
         // Nous choissisons de créer l'arbre a partir de données d'apprentissage qui
         // seront les 8 premieres données du fichier
-        int nb_exemples = 10;
-        fichier_golf.setdataapp(nb_exemples);
+
+        fichier_golf.setdataapp(nb_exemples_apprentissages);
 
         // et donc les données de predictions qui seront les autres
-        fichier_golf.setdatapred(nb_exemples);
+        fichier_golf.setdatapred(nb_exemples_apprentissages);
 
         // calcul du gain des attributs
         fichier_golf.set_entropie();
