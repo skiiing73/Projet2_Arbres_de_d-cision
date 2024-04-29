@@ -5,7 +5,7 @@ import java.util.ArrayList;
 class Fichiertest {
     public static void main(String[] args) {
         String nom_fichier = "data/golf.csv";
-        int nb_exemples_apprentissages = 7;
+        int nb_exemples_apprentissages = 11;
 
         // affichage des données du fichier
         DonneesFichier fichier_golf = new DonneesFichier(nom_fichier);

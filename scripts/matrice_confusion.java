@@ -85,8 +85,8 @@ public class matrice_confusion {
     }
 
     public String toString() {
-        return "    yes " + " no\n" + "yes  " + truepositive + "   " + truenegative + "\n " + "no  " + falsepositive
+        return "    no " + " yes\n" + "no  " + truenegative + "   " + falsenegative + "\n" + "yes " + falsepositive
                 + "   "
-                + falsenegative + "\n";
+                + truepositive + "\n";
     }
 }
